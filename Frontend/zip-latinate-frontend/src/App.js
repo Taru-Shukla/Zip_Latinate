@@ -7,7 +7,7 @@ import './App.css';
 function App() {
     const [pigLatinName, setPigLatinName] = useState("");
     const [mapData, setMapData] = useState(null);
-    const apiURL = process.env.REACT_APP_API_URL;
+    const apiURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
     console.log(apiURL);
 
     const handleNameConvert = async (name) => {
