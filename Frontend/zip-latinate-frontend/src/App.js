@@ -22,7 +22,7 @@ function App(){
         if (response.ok) {
             const data = await response.json();
             console.log(data);
-            setPigLatinName(data.pig_latin_name || "Conversion failed");
+            setPigLatinName(data.pig_latin_name);
         } else {
             const errorText = await response.text();
             console.error("Response Error:", errorText);
