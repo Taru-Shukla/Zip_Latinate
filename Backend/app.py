@@ -37,20 +37,49 @@ def zip_code_pop(zip_code):
         return {"county": county, "latitude": latitude, "longitude": longitude, "population": population}
     return None
 
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({"error": "Internal server error"}), 500
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return jsonify({"error": "Not found"}), 404
+
 @app.route('/convert_name', methods=['POST'])
 def convert_name():
-    name = request.json['name']
-    return jsonify({"pig_latin_name": pig_latin(name)})
+    try:
+        name = request.json['name']
+        return jsonify({"pig_latin_name": pig_latin(name)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/zipcode_info', methods=['POST'])
 def zipcode_info():
-    zipcode = request.json.get('zip_code', '').zfill(5)  # Ensure zip code is 5 digits
-    print(f"Received Zipcode: {zipcode}")  # Debugging print
-
-    info = zip_code_pop(zipcode)
-    if info:
-        return jsonify(info)
-    return jsonify({"error": "Zip code not found"}), 404
+    try:
+        zipcode = request.json.get('zip_code', '').zfill(5)  # Ensure zip code is 5 digits
+        info = zip_code_pop(zipcode)
+        if info:
+            return jsonify(info)
+        return jsonify({"error": "Zip code not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
+# @app.route('/convert_name', methods=['POST'])
+# def convert_name():
+#     name = request.json['name']
+#     return jsonify({"pig_latin_name": pig_latin(name)})
+
+# @app.route('/zipcode_info', methods=['POST'])
+# def zipcode_info():
+#     zipcode = request.json.get('zip_code', '').zfill(5)  # Ensure zip code is 5 digits
+#     print(f"Received Zipcode: {zipcode}")  # Debugging print
+
+#     info = zip_code_pop(zipcode)
+#     if info:
+#         return jsonify(info)
+#     return jsonify({"error": "Zip code not found"}), 404
+
+# if __name__ == '__main__':
+#     app.run(debug=True)

@@ -10,21 +10,28 @@ function App(){
   const apiURL = process.env.FRONTEND_URL;
 
   const handleNameConvert = async (name) => {
-      const response = await fetch(`${apiURL}/convert_name`, {
-          method: 'POST',
-          headers:{
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({name}),
-      });
+    try {
+        const response = await fetch(`${apiURL}/convert_name`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name }),
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        setPigLatinName(data.pig_latin_name);
-    } else {
-        alert('Failed to convert name');
+        if (response.ok) {
+            const text = await response.text();
+            const data = text ? JSON.parse(text) : {};
+            setPigLatinName(data.pig_latin_name || "Conversion failed");
+        } else {
+            alert('Failed to convert name');
+        }
+    } catch (error) {
+        console.error("Error converting name:", error);
+        alert('An error occurred while converting the name.');
     }
-  };
+};
+
 
   const handleZipcodeFetch = async (zipcode) =>{
       const response = await fetch(`${apiURL}/zipcode_info`,{
