@@ -3,7 +3,7 @@ from flask_cors import CORS
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://zip-latinate-frontend.onrender.com"}})
+CORS(app, resources={r"/api/*": {"origins": "https://zip-latinate-frontend.onrender.com"}})
 
 def pig_latin(name):
     vowels = "aeiou"
@@ -41,7 +41,7 @@ def internal_error(error):
 def not_found_error(error):
     return jsonify({"error": "Not found"}), 404
 
-@app.route('/convert_name', methods=['POST'])
+@app.route('/api/convert_name', methods=['POST'])
 def convert_name():
     try:
         name = request.json.get('name', '')
@@ -53,7 +53,7 @@ def convert_name():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/zipcode_info', methods=['POST'])
+@app.route('/api/zipcode_info', methods=['POST'])
 def zipcode_info():
     try:
         zipcode = request.json.get('zip_code', '').zfill(5)  # Ensure zip code is 5 digits

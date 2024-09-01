@@ -12,7 +12,7 @@ function App() {
 
     const handleNameConvert = async (name) => {
         try {
-            const response = await fetch('https://zip-latinate-backend.onrender.com/convert_name', {
+            const response = await fetch('https://zip-latinate-backend.onrender.com/api/convert_name', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ function App() {
 
     const handleZipcodeFetch = async (zipcode) => {
         try {
-            const response = await fetch('https://zip-latinate-backend.onrender.com/zipcode_info', {
+            const response = await fetch('https://zip-latinate-backend.onrender.com/api/zipcode_info', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
