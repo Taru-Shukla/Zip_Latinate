@@ -7,7 +7,7 @@ import './App.css';
 function App(){
   const[pigLatinName, setPigLatinName] = useState("");
   const[mapData, setMapData] = useState(null);
-  const apiURL = process.env.FRONTEND_URL;
+  const apiURL = process.env.FRONTEND_URL || 'http://localhost:5000';
 
   const handleNameConvert = async (name) => {
     try {
@@ -20,11 +20,12 @@ function App(){
         });
 
         if (response.ok) {
-            const text = await response.text();
-            console.log(text);
-            const data = text ? JSON.parse(text) : {};
+            const data = await response.json();
+            console.log(data);
             setPigLatinName(data.pig_latin_name || "Conversion failed");
         } else {
+            const errorText = await response.text();
+            console.error("Response Error:", errorText);
             alert('Failed to convert name');
         }
     } catch (error) {
