@@ -24,10 +24,6 @@ def zip_code_pop(zip_code):
     df = pd.read_csv('uszips.csv')
     df['zip'] = df['zip'].astype(str).str.strip().str.zfill(5)  # Ensure zip codes are strings with leading zeros
     
-    print(f"Searching for Zipcode: {zip_code}")
-    print(df['zip'].head(10))  # Print the first 10 zip codes to verify formatting
-    print(df[df['zip'] == zip_code])  # Debugging print
-
     result = df[df['zip'] == zip_code]
     if not result.empty:
         county = result.iloc[0]['county_name']
@@ -48,8 +44,12 @@ def not_found_error(error):
 @app.route('/convert_name', methods=['POST'])
 def convert_name():
     try:
-        name = request.json['name']
-        return jsonify({"pig_latin_name": pig_latin(name)})
+        name = request.json.get('name', '')
+        if not name:
+            return jsonify({"error": "No name provided"}), 400
+
+        pig_latin_name = pig_latin(name)
+        return jsonify({"pig_latin_name": pig_latin_name})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -66,20 +66,3 @@ def zipcode_info():
 
 if __name__ == '__main__':
     app.run(debug=True)
-# @app.route('/convert_name', methods=['POST'])
-# def convert_name():
-#     name = request.json['name']
-#     return jsonify({"pig_latin_name": pig_latin(name)})
-
-# @app.route('/zipcode_info', methods=['POST'])
-# def zipcode_info():
-#     zipcode = request.json.get('zip_code', '').zfill(5)  # Ensure zip code is 5 digits
-#     print(f"Received Zipcode: {zipcode}")  # Debugging print
-
-#     info = zip_code_pop(zipcode)
-#     if info:
-#         return jsonify(info)
-#     return jsonify({"error": "Zip code not found"}), 404
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
