@@ -1,9 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
-import streamlit as st
 
-st.write('test')
 app = Flask(__name__)
 CORS(app)
 
@@ -54,3 +52,5 @@ def zipcode_info():
         return jsonify(info)
     return jsonify({"error": "Zip code not found"}), 404
 
+if __name__ == '__main__':
+    app.run(debug=True)
