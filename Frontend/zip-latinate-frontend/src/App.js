@@ -7,7 +7,7 @@ import './App.css';
 function App(){
   const[pigLatinName, setPigLatinName] = useState("");
   const[mapData, setMapData] = useState(null);
-  const apiURL = process.env.FRONTEND_URL || 'http://localhost:5000';
+  const apiURL = process.env.FRONTEND_URL;
 
   const handleNameConvert = async (name) => {
     try {
