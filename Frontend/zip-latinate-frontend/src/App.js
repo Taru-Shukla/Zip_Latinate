@@ -21,6 +21,7 @@ function App(){
 
         if (response.ok) {
             const text = await response.text();
+            console.log(text);
             const data = text ? JSON.parse(text) : {};
             setPigLatinName(data.pig_latin_name || "Conversion failed");
         } else {
