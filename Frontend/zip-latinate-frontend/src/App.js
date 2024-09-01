@@ -7,9 +7,10 @@ import './App.css';
 function App(){
   const[pigLatinName, setPigLatinName] = useState("");
   const[mapData, setMapData] = useState(null);
+  const apiURL = process.env.FRONTEND_URL;
 
   const handleNameConvert = async (name) => {
-      const response = await fetch('/convert_name', {
+      const response = await fetch(`${apiURL}/convert_name`, {
           method: 'POST',
           headers:{
               'Content-Type': 'application/json',
@@ -26,7 +27,7 @@ function App(){
   };
 
   const handleZipcodeFetch = async (zipcode) =>{
-      const response = await fetch('/zipcode_info',{
+      const response = await fetch(`${apiURL}/zipcode_info`,{
           method:'POST',
           headers:{
               'Content-Type':'application/json',
@@ -42,13 +43,6 @@ function App(){
         const errorData = await response.json();
         alert(errorData.error);
     }
-    //   const data = await response.json();
-    //   if(response.ok){
-    //       const position = [data.latitude, data.longitude];
-    //       setMapData({position, county: data.county});
-    //   }else{
-    //       alert(data.error);
-    //   }
   };
 
   return(
