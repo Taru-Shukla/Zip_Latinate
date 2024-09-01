@@ -3,7 +3,7 @@ from flask_cors import CORS
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://zip-latinate-frontend.onrender.com"]}})
+CORS(app, resources={r"/*": {"origins": "https://zip-latinate-frontend.onrender.com"}})
 
 def pig_latin(name):
     vowels = "aeiou"
