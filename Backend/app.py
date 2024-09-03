@@ -92,7 +92,7 @@
 # if __name__ == '__main__':
 #     app.run()
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 
@@ -115,7 +115,7 @@ def pig_latin(name):
             pig_latin_words.append(word[1:] + word[0] + "ay")
     return " ".join(pig_latin_words)
 
-@app.route('/api/convert_name', methods=['POST'])
+@app.route('/api/convert_name', methods=['POST','OPTIONS'])
 def convert_name():
     try:
         data = request.json  # Get JSON data
