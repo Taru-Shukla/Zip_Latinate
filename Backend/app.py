@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Apply CORS to the entire app
 # This should allow requests from 'https://zip-latinate-frontend.onrender.com'
 CORS(app, resources={r"/api/*": {
-    "origins": "https://zip-latinate-frontend.onrender.com",
+    "origins": "*",
     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
     "supports_credentials": True
