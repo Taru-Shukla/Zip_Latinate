@@ -3,12 +3,17 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Apply CORS to the Flask app
+
+@app.route('/')
+def home():
+    return "CORS is now enabled for all routes!"
 
 # Get the external hostname from the environment variable
-external_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+#external_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
 # CORS setup: Allow requests from the external hostname
-CORS(app, resources={r"/api/*": {"origins": f"https://{external_hostname}"}})
+#CORS(app, resources={r"/api/*": {"origins": f"https://{external_hostname}"}})
 
 @app.route('/api/convert_name', methods=['POST'])
 def convert_name():
