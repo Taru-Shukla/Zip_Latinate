@@ -1,17 +1,31 @@
-import os
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 
-# CORS setup: Allow the frontend domain to make requests to the backend
-CORS(app, resources={r"/api/*": {"origins": "https://zip-latinate-frontend.onrender.com"}})
+# Allow all domains for CORS (adjust accordingly)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-@app.route('/api/convert_name', methods=['POST'])
+@app.route('/api/convert_name', methods=['POST', 'OPTIONS'])
+@cross_origin()
 def convert_name():
-    name = request.json.get('name', '')
-    pig_latin_name = pig_latin(name)
-    return jsonify({"pig_latin_name": pig_latin_name})
+    if request.method == "OPTIONS":  # Handling preflight for browsers
+        return _build_cors_preflight_response()
+    elif request.method == "POST":
+        name = request.json.get('name', '')
+        pig_latin_name = pig_latin(name)
+        return _corsify_actual_response(jsonify({"pig_latin_name": pig_latin_name}))
+
+def _build_cors_preflight_response():
+    response = jsonify({})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 def pig_latin(name):
     vowels = "aeiou"
@@ -28,14 +42,6 @@ def pig_latin(name):
             pig_latin_words.append(word[1:] + word[0] + "ay")
     return " ".join(pig_latin_words)
 
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-    response.headers.add('Access-Control-Allow-Origin', 'https://zip-latinate-frontend.onrender.com')
-    return response
-
 if __name__ == '__main__':
-    # Bind to the port specified by the PORT environment variable, or use 5000 as a fallback
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
