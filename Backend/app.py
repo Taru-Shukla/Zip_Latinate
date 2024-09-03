@@ -31,10 +31,6 @@ def zip_code_pop(zip_code):
     df = pd.read_csv('uszips.csv')
     df['zip'] = df['zip'].astype(str).str.strip().str.zfill(5)  # Ensure zip codes are strings with leading zeros
     
-    print(f"Searching for Zipcode: {zip_code}")
-    print(df['zip'].head(10))  # Print the first 10 zip codes to verify formatting
-    print(df[df['zip'] == zip_code])  # Debugging print
-
     result = df[df['zip'] == zip_code]
     if not result.empty:
         county = result.iloc[0]['county_name']
@@ -44,20 +40,31 @@ def zip_code_pop(zip_code):
         return {"county": county, "latitude": latitude, "longitude": longitude, "population": population}
     return None
 
-@app.route('/api/convert_name', methods=['POST'])
+@app.before_request
+def handle_options():
+    """Handle OPTIONS requests for CORS preflight."""
+    if request.method == 'OPTIONS':
+        return '', 204  # Return 204 No Content for preflight requests
+
+@app.route('/api/convert_name', methods=['POST', 'OPTIONS'])
 def convert_name():
+    if request.method == 'OPTIONS':
+        return '', 204  # Return 204 No Content for preflight requests
+    
     try:
         data = request.json
         name = data.get('name', '')
         pig_latin_name = pig_latin(name)
-        return jsonify({'pig_latin_name': pig_latin_name}),200
+        return jsonify({'pig_latin_name': pig_latin_name}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/zipcode_info', methods=['POST'])
+@app.route('/api/zipcode_info', methods=['POST', 'OPTIONS'])
 def zipcode_info():
+    if request.method == 'OPTIONS':
+        return '', 204  # Return 204 No Content for preflight requests
+    
     zipcode = request.json.get('zip_code', '').zfill(5)  # Ensure zip code is 5 digits
-    #print(f"Received Zipcode: {zipcode}")  # Debugging print
     info = zip_code_pop(zipcode)
     if info:
         return jsonify(info)
