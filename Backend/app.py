@@ -28,6 +28,13 @@ def pig_latin(name):
             pig_latin_words.append(word[1:] + word[0] + "ay")
     return " ".join(pig_latin_words)
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    response.headers.add('Access-Control-Allow-Origin', 'https://zip-latinate-frontend.onrender.com')
+    return response
+
 if __name__ == '__main__':
     # Bind to the port specified by the PORT environment variable, or use 5000 as a fallback
     port = int(os.environ.get('PORT', 5000))
