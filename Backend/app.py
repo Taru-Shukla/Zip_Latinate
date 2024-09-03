@@ -1,7 +1,17 @@
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
 import pandas as pd
 
 app = Flask(__name__)
+
+# Apply CORS to the entire app
+# This should allow requests from 'https://zip-latinate-frontend.onrender.com'
+CORS(app, resources={r"/*": {
+    "origins": "https://zip-latinate-frontend.onrender.com",
+    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
+    "supports_credentials": True
+}})
 
 def pig_latin(name):
     vowels = "aeiou"
@@ -31,23 +41,6 @@ def zip_code_pop(zip_code):
         return {"county": county, "latitude": latitude, "longitude": longitude, "population": population}
     return None
 
-@app.before_request
-def handle_options():
-    if request.method == 'OPTIONS':
-        response = make_response('', 204)
-        response.headers['Access-Control-Allow-Origin'] = 'https://zip-latinate-frontend.onrender.com'
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
-        response.headers['Access-Control-Allow-Credentials'] = 'true'
-        return response
-
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'https://zip-latinate-frontend.onrender.com'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
-    return response
-
 @app.route('/api/convert_name', methods=['POST'])
 def convert_name():
     try:
@@ -55,10 +48,10 @@ def convert_name():
         name = data.get('name', '')
         pig_latin_name = pig_latin(name)
         response = jsonify({'pig_latin_name': pig_latin_name})
-        return add_cors_headers(response)
+        return response, 200
     except Exception as e:
         response = jsonify({'error': str(e)})
-        return add_cors_headers(response), 500
+        return response, 500
 
 @app.route('/api/zipcode_info', methods=['POST'])
 def zipcode_info():
@@ -66,8 +59,8 @@ def zipcode_info():
     info = zip_code_pop(zipcode)
     if info:
         response = jsonify(info)
-        return add_cors_headers(response)
-    return add_cors_headers(jsonify({"error": "Zip code not found"})), 404
+        return response, 200
+    return jsonify({"error": "Zip code not found"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
