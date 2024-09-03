@@ -4,19 +4,11 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 
-# CORS setup: Allow requests from the frontend
-CORS(app, resources={r"/api/*": {"origins": "https://zip-latinate-frontend.onrender.com"}})
+# Get the external hostname from the environment variable
+external_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
-# Explicitly handle OPTIONS request (preflight)
-@app.before_request
-def handle_options_request():
-    if request.method == 'OPTIONS':
-        response = app.make_default_options_response()
-        response.headers['Access-Control-Allow-Origin'] = 'https://zip-latinate-frontend.onrender.com'
-        response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
-        response.headers['Access-Control-Max-Age'] = '3600'  # Cache preflight request for an hour
-        return response
+# CORS setup: Allow requests from the external hostname
+CORS(app, resources={r"/api/*": {"origins": f"https://{external_hostname}"}})
 
 @app.route('/api/convert_name', methods=['POST'])
 def convert_name():
