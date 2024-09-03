@@ -5,9 +5,8 @@ import pandas as pd
 app = Flask(__name__)
 
 # CORS Configuration
-# This will allow CORS for all routes with specific settings
 CORS(app, resources={r"/*": {
-    "origins": ["https://zip-latinate-frontend.onrender.com"],  # Restricting to your frontend's origin
+    "origins": ["https://zip-latinate-frontend.onrender.com"],
     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Allowed methods
     "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],  # Allowed headers
     "supports_credentials": True  # If you need to allow credentials (cookies, authorization headers)
@@ -47,22 +46,22 @@ def zip_code_pop(zip_code):
 
 @app.route('/api/convert_name', methods=['POST'])
 def convert_name():
-    data = request.json
-    name = data.get('name', '')
-    pig_latin_name = pig_latin(name)  # Implement this function based on your logic
-    return jsonify({'pig_latin_name': pig_latin_name})
+    try:
+        data = request.json
+        name = data.get('name', '')
+        pig_latin_name = pig_latin(name)
+        return jsonify({'pig_latin_name': pig_latin_name}),200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/zipcode_info', methods=['POST'])
 def zipcode_info():
-    data = request.json
-    zip_code = data.get('zip_code', '')
-    # Implement your logic to fetch county and coordinates based on the zip code
-    response_data = {
-        'latitude': 40.7128,  # Example latitude
-        'longitude': -74.0060,  # Example longitude
-        'county': 'New York'  # Example county
-    }
-    return jsonify(response_data)
+    zipcode = request.json.get('zip_code', '').zfill(5)  # Ensure zip code is 5 digits
+    #print(f"Received Zipcode: {zipcode}")  # Debugging print
+    info = zip_code_pop(zipcode)
+    if info:
+        return jsonify(info)
+    return jsonify({"error": "Zip code not found"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
