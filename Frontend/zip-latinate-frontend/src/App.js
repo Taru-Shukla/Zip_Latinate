@@ -7,8 +7,6 @@ import './App.css';
 function App() {
     const [pigLatinName, setPigLatinName] = useState("");
     const [mapData, setMapData] = useState(null);
-    //const apiURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-    //console.log(apiURL);
 
     const handleNameConvert = async (name) => {
         try {
@@ -21,8 +19,7 @@ function App() {
             });
 
             if (response.ok) {
-                const text = await response.text();
-                const data = text ? JSON.parse(text) : {};
+                const data = await response.json();
                 setPigLatinName(data.pig_latin_name || "Conversion failed");
             } else {
                 const errorText = await response.text();

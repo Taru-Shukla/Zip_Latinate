@@ -1,9 +1,17 @@
+import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import pandas as pd
 
 app = Flask(__name__)
+
+# CORS setup: Allow the frontend domain to make requests to the backend
 CORS(app, resources={r"/api/*": {"origins": "https://zip-latinate-frontend.onrender.com"}})
+
+@app.route('/api/convert_name', methods=['POST'])
+def convert_name():
+    name = request.json.get('name', '')
+    pig_latin_name = pig_latin(name)
+    return jsonify({"pig_latin_name": pig_latin_name})
 
 def pig_latin(name):
     vowels = "aeiou"
@@ -20,49 +28,7 @@ def pig_latin(name):
             pig_latin_words.append(word[1:] + word[0] + "ay")
     return " ".join(pig_latin_words)
 
-def zip_code_pop(zip_code):
-    df = pd.read_csv('uszips.csv')
-    df['zip'] = df['zip'].astype(str).str.strip().str.zfill(5)  # Ensure zip codes are strings with leading zeros
-    
-    result = df[df['zip'] == zip_code]
-    if not result.empty:
-        county = result.iloc[0]['county_name']
-        latitude = result.iloc[0]['lat']
-        longitude = result.iloc[0]['lng']
-        population = result.iloc[0]['population']
-        return {"county": county, "latitude": latitude, "longitude": longitude, "population": population}
-    return None
-
-@app.errorhandler(500)
-def internal_error(error):
-    return jsonify({"error": "Internal server error"}), 500
-
-@app.errorhandler(404)
-def not_found_error(error):
-    return jsonify({"error": "Not found"}), 404
-
-@app.route('/api/convert_name', methods=['POST'])
-def convert_name():
-    try:
-        name = request.json.get('name', '')
-        if not name:
-            return jsonify({"error": "No name provided"}), 400
-
-        pig_latin_name = pig_latin(name)
-        return jsonify({"pig_latin_name": pig_latin_name})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/zipcode_info', methods=['POST'])
-def zipcode_info():
-    try:
-        zipcode = request.json.get('zip_code', '').zfill(5)  # Ensure zip code is 5 digits
-        info = zip_code_pop(zipcode)
-        if info:
-            return jsonify(info)
-        return jsonify({"error": "Zip code not found"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Bind to the port specified by the PORT environment variable, or use 5000 as a fallback
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
