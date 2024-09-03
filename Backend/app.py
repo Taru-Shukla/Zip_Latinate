@@ -1,31 +1,28 @@
+import os
 from flask import Flask, jsonify, request
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 
 app = Flask(__name__)
 
-# Allow all domains for CORS (adjust accordingly)
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+# CORS setup: Allow requests from the frontend
+CORS(app, resources={r"/api/*": {"origins": "https://zip-latinate-frontend.onrender.com"}})
 
-@app.route('/api/convert_name', methods=['POST', 'OPTIONS'])
-@cross_origin()
+# Explicitly handle OPTIONS request (preflight)
+@app.before_request
+def handle_options_request():
+    if request.method == 'OPTIONS':
+        response = app.make_default_options_response()
+        response.headers['Access-Control-Allow-Origin'] = 'https://zip-latinate-frontend.onrender.com'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
+        response.headers['Access-Control-Max-Age'] = '3600'  # Cache preflight request for an hour
+        return response
+
+@app.route('/api/convert_name', methods=['POST'])
 def convert_name():
-    if request.method == "OPTIONS":  # Handling preflight for browsers
-        return _build_cors_preflight_response()
-    elif request.method == "POST":
-        name = request.json.get('name', '')
-        pig_latin_name = pig_latin(name)
-        return _corsify_actual_response(jsonify({"pig_latin_name": pig_latin_name}))
-
-def _build_cors_preflight_response():
-    response = jsonify({})
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-    return response
-
-def _corsify_actual_response(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+    name = request.json.get('name', '')
+    pig_latin_name = pig_latin(name)
+    return jsonify({"pig_latin_name": pig_latin_name})
 
 def pig_latin(name):
     vowels = "aeiou"
@@ -44,4 +41,4 @@ def pig_latin(name):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port)
