@@ -13,11 +13,6 @@ cors = CORS(app, resources={r'/api/*': {
 }})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-@app.route("/")
-@cross_origin()
-def helloWorld():
-  return "Hello, cross-origin-world!"
-
 def pig_latin(name):
     vowels = "aeiou"
     name = name.lower()
@@ -47,6 +42,7 @@ def zip_code_pop(zip_code):
     return None
 
 @app.route('/api/convert_name', methods=['POST'])
+@cross_origin()
 def convert_name():
     try:
         data = request.get_json()  # Get JSON data
@@ -62,6 +58,7 @@ def convert_name():
         return make_cors_response(response, 500)
 
 @app.route('/api/zipcode_info', methods=['POST'])
+@cross_origin()
 def zipcode_info():
     try:
         data = request.get_json()  # Get JSON data
@@ -80,7 +77,7 @@ def zipcode_info():
 
 def make_cors_response(response, status=200):
     # This function ensures that the correct CORS headers are added to each response
-    response.headers.add('Access-Control-Allow-Origin', 'https://zip-latinate-frontend.onrender.com')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
