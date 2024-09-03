@@ -97,7 +97,8 @@ from flask_cors import CORS
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins" : "https://zip-latinate-frontend.onrender.com" }})
+CORS(app, origins=["https://zip-latinate-frontend.onrender.com"])
+
 
 def pig_latin(name):
     vowels = "aeiou"
@@ -117,7 +118,7 @@ def pig_latin(name):
 @app.route('/api/convert_name', methods=['POST'])
 def convert_name():
     try:
-        data = request.get_json()  # Get JSON data
+        data = request.json  # Get JSON data
         if not data or 'name' not in data:
             response = jsonify({'error': 'Name not provided'})
             return make_cors_response(response, 400)
