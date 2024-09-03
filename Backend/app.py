@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app, origins = "https://zip-latinate-frontend.onrender.com")
+CORS(app, resources={r"/*": {"origins" : "https://zip-latinate-frontend.onrender.com" }})
 
 @app.route("/api/", methods=['GET'])
 def home():
