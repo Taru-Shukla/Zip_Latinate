@@ -5,7 +5,7 @@ import pandas as pd
 app = Flask(__name__)
 
 # Apply CORS to the entire app
-cors = CORS(app, resources={r'/api/*': {
+cors = CORS(app, resources={r'/api/': {
     'origins': 'https://zip-latinate-frontend.onrender.com',
     'methods': ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     'allow_headers': ["Content-Type", "Authorization", "X-Requested-With"],
