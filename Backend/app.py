@@ -94,11 +94,9 @@
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import pandas as pd
 
 app = Flask(__name__)
 CORS(app, origins=["https://zip-latinate-frontend.onrender.com"])
-
 
 def pig_latin(name):
     vowels = "aeiou"
@@ -115,30 +113,47 @@ def pig_latin(name):
             pig_latin_words.append(word[1:] + word[0] + "ay")
     return " ".join(pig_latin_words)
 
-@app.route('/api/convert_name', methods=['POST','OPTIONS'])
+# Standardized Response Format
+def build_response(status, message, data=None):
+    response_content = {
+        'status': status,
+        'message': message,
+        'data': data
+    }
+    return jsonify(response_content)
+
+@app.route('/api/convert_name', methods=['POST', 'OPTIONS'])
 def convert_name():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response()
     try:
         data = request.json  # Get JSON data
         if not data or 'name' not in data:
-            response = jsonify({'error': 'Name not provided'})
-            return make_cors_response(response, 400)
+            return _corsify_actual_response(build_response('fail', 'Name not provided'), 400)
 
         name = data.get('name', '')
         pig_latin_name = pig_latin(name)
-        response = jsonify({'pig_latin_name': pig_latin_name})
-        return make_cors_response(response, 200)
+        return _corsify_actual_response(build_response('success', 'Conversion successful', {'pig_latin_name': pig_latin_name}), 200)
     except Exception as e:
-        response = jsonify({'error': str(e)})
-        return make_cors_response(response, 500)
+        return _corsify_actual_response(build_response('error', str(e)), 500)
 
-def make_cors_response(response, status=200):
-    # This function ensures that the correct CORS headers are added to each response
-    response.headers.add('Access-Control-Allow-Origin', '*')
+# CORS Preflight Handler
+def _build_cors_preflight_response():
+    response = jsonify({'message': 'CORS preflight'})
+    response.headers.add('Access-Control-Allow-Origin', 'https://zip-latinate-frontend.onrender.com')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    return response
+
+# CORS Response Handler
+def _corsify_actual_response(response, status=200):
+    response.headers.add('Access-Control-Allow-Origin', 'https://zip-latinate-frontend.onrender.com')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
-    response.headers.add('Content-Type', 'application/json')  # Ensure JSON content type
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     return response, status
 
 if __name__ == '__main__':
     app.run()
+
+
