@@ -92,11 +92,16 @@
 # if __name__ == '__main__':
 #     app.run()
 
+import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app, origins=["https://zip-latinate-frontend.onrender.com"])
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def pig_latin(name):
     vowels = "aeiou"
@@ -129,12 +134,15 @@ def convert_name():
     try:
         data = request.json  # Get JSON data
         if not data or 'name' not in data:
+            logger.warning("Name not provided in request")
             return _corsify_actual_response(build_response('fail', 'Name not provided'), 400)
 
         name = data.get('name', '')
         pig_latin_name = pig_latin(name)
+        logger.info(f"Converted name: {name} to Pig Latin: {pig_latin_name}")
         return _corsify_actual_response(build_response('success', 'Conversion successful', {'pig_latin_name': pig_latin_name}), 200)
     except Exception as e:
+        logger.error(f"Error during name conversion: {str(e)}")
         return _corsify_actual_response(build_response('error', str(e)), 500)
 
 # CORS Preflight Handler
