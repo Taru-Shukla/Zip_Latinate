@@ -97,7 +97,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, origins=["https://zip-latinate-frontend.onrender.com"])
+CORS(app, origins=["https://corsproxy.io/?https://zip-latinate-frontend.onrender.com"])
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -148,14 +148,14 @@ def convert_name():
 # CORS Preflight Handler
 def _build_cors_preflight_response():
     response = jsonify({'message': 'CORS preflight'})
-    response.headers.add('Access-Control-Allow-Origin', 'https://zip-latinate-frontend.onrender.com')
+    response.headers.add('Access-Control-Allow-Origin', 'https://corsproxy.io/?https://zip-latinate-frontend.onrender.com')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     return response
 
 # CORS Response Handler
 def _corsify_actual_response(response, status=200):
-    response.headers.add('Access-Control-Allow-Origin', 'https://zip-latinate-frontend.onrender.com')
+    response.headers.add('Access-Control-Allow-Origin', 'https://corsproxy.io/?https://zip-latinate-frontend.onrender.com')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
