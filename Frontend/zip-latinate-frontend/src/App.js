@@ -7,10 +7,11 @@ import './App.css';
 function App() {
     const [pigLatinName, setPigLatinName] = useState("");
     const [mapData, setMapData] = useState(null);
+    const apiURL = process.env.REACT_APP_API_URL;
 
     const handleNameConvert = async (name) => {
         try {
-            const response = await fetch('https://zip-latinate-backend.onrender.com/api/convert_name', {
+            const response = await fetch(`${apiURL}/convert_name`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -34,7 +35,7 @@ function App() {
 
     const handleZipcodeFetch = async (zipcode) => {
         try {
-            const response = await fetch('https://zip-latinate-backend.onrender.com/api/zipcode_info', {
+            const response = await fetch(`${apiURL}/zipcode_info`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
