@@ -1,38 +1,136 @@
+/* General Settings */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif; /* Playful, rounded font */
+  background-color: #f8d24a; /* Vibrant yellow background */
+  color: #000; /* Black text */
+}
+
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  min-height: 100vh;
+  background-color: #f8d24a;
 }
 
-.App-link {
-  color: #61dafb;
+h1 {
+  font-size: 4rem;
+  margin: 20px 0;
+  color: #000; /* Bold black text for the header */
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  position: relative;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+h1::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 100px;
+  height: 4px;
+  background-color: #e75a7c; /* Pink underline */
+}
+
+/* Main Layout */
+.main-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+.fun-facts, .map-container {
+  flex: 1;
+  padding: 20px;
+  margin: 10px;
+}
+
+/* Fun Facts Section */
+.fun-facts {
+  background-color: #fff; /* White background for contrast */
+  border-radius: 20px;
+  padding: 40px;
+  color: #333;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+.fun-facts h3 {
+  font-size: 2.5rem;
+  color: #e75a7c; /* Pink text for emphasis */
+}
+
+.fun-facts p {
+  line-height: 1.8;
+  margin-top: 10px;
+  color: #555;
+}
+
+/* Map Section */
+.map-container {
+  background-color: #fff; /* White background for contrast */
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  padding: 40px;
+  text-align: center;
+}
+
+.map-container h3 {
+  color: #e75a7c;
+}
+
+input {
+  padding: 15px;
+  font-size: 1.5rem;
+  border: 2px solid #e75a7c;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+  background-color: #fff;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  border-color: #333;
+}
+
+button {
+  padding: 15px 40px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 50px;
+  background-color: #e75a7c; /* Pink button */
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #333; /* Dark hover effect */
+  color: #f8d24a; /* Switch to yellow text */
+}
+
+/* Scroll Button */
+.scroll-down {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  color: #e75a7c;
+  cursor: pointer;
+}
+
+.scroll-down:hover {
+  color: #333;
 }

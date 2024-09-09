@@ -60,12 +60,19 @@ def zipcode_info():
         zipcode = data.get('zip_code', '').zfill(5)  # Ensure zip code is 5 digits
         info = zip_code_pop(zipcode)
         if info:
-            response = jsonify(info)
+            # Include population in the response
+            response = jsonify({
+                "county": info['county'],
+                "latitude": info['latitude'],
+                "longitude": info['longitude'],
+                "population": info['population']
+            })
             return make_cors_response(response, 200)
         return make_cors_response(jsonify({"error": "Zip code not found"}), 404)
     except Exception as e:
         response = jsonify({'error': str(e)})
         return make_cors_response(response, 500)
+
 
 def make_cors_response(response, status=200):
     # This function ensures that the correct CORS headers are added to each response
