@@ -3,7 +3,7 @@ import Map from "./components/Map.js";
 import Auth from "./components/Auth.js";
 import SavedSearches from "./components/SavedSearches.js";
 import SearchForm from "./components/SearchForm.js";
-import LogoutButton from "./LogoutButton.js";
+import LogoutButton from "./components/LogoutButton.js";
 import './App.css';
 
 function App() {
