@@ -42,6 +42,8 @@ function App() {
             const data = await response.json();
             if (response.ok) {
                 setToken(data.access_token);
+                setUsername("");
+                setPassword("");
             } else {
                 alert(data.error); // Show error to user
             }
@@ -172,6 +174,11 @@ function App() {
 
     // Handle saving the search
     const handleSaveSearch = async () => {
+    if (savedSearches.length >= 5) {
+            alert("You have reached the maximum number of saved searches. Please delete one to save a new search.");
+            return; // Prevent further execution if limit is reached
+        }
+
         if (token && county && population) { // Ensure search data is ready before saving
             try {
                 const saveSearchResponse = await fetch(`${apiURL}/save_search`, {
@@ -209,8 +216,9 @@ function App() {
 
     const facts = [
         "Pig Latin is a fun way to alter English words. By moving the first consonant to the end and adding 'ay', you can create a playful version of your name!",
-        "Pig Latin was commonly used as a secret language among kids in the 19th century.",
-        "Pig Latin can be a fun code language to share playful secrets with friends!"
+        "Pig Latin can be a fun code language to share playful secrets with friends!",
+        "This language game originated from kids’ play in the 1800s. It was initially known as Hog Latin before taking the more formal term Pig Latin.",
+        "There are earlier mentions of this type of language game which was then called dog Latin. It was a parody of the Latin language which had become a language of the elite in the middle ages.  Shakespeare’s 1598 play, Love’s Labour’s Lost references dog Latin implying a play on English words."
       ];
 
       // Cycle through facts every 5 seconds

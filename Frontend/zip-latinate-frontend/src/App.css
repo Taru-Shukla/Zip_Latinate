@@ -179,6 +179,7 @@ button.save-search {
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-size: medium;
 }
 
 .delete-button:hover {
@@ -300,4 +301,10 @@ button.save-search {
   font-style: italic;
   font-weight: bold;
   font-size: 1.2rem;
+}
+
+.error {
+  color: red;
+  margin-top: 5px;
+  font-size: 1.2em;
 }
