@@ -18,6 +18,8 @@ function App() {
     const [password, setPassword] = useState("");
     const [isRegistering, setIsRegistering] = useState(false); // To toggle between login and registration
     const [savedSearches, setSavedSearches] = useState([]); // To store saved searches
+    const [currentFactIndex, setCurrentFactIndex] = useState(0);
+
     const apiURL = process.env.REACT_APP_API_URL;
 
     // Handle user login
@@ -204,71 +206,88 @@ function App() {
     }, [token]);
     // Conditional styling for background color transition
     const appClass = isRegistering ? "App registering" : "App";
- 
 
-    return (
-        <div className={appClass}>
-            {/* Logout button on top-right corner */}
-            {token && <LogoutButton handleLogout={handleLogout} />}
+    const facts = [
+        "Pig Latin is a fun way to alter English words. By moving the first consonant to the end and adding 'ay', you can create a playful version of your name!",
+        "Pig Latin was commonly used as a secret language among kids in the 19th century.",
+        "Pig Latin can be a fun code language to share playful secrets with friends!"
+      ];
 
-            <h1>ZipLatinate</h1>
+      // Cycle through facts every 5 seconds
+  useEffect(() => {
+    const factInterval = setInterval(() => {
+      setCurrentFactIndex((prevIndex) => (prevIndex + 1) % facts.length);
+    }, 5000); // Change fact every 5 seconds
 
-            {/* Conditionally render login or register form */}
-            {!token ? (
-                <Auth
-                    isRegistering={isRegistering}
-                    setIsRegistering={setIsRegistering}
-                    username={username}
-                    setUsername={setUsername}
-                    password={password}
-                    setPassword={setPassword}
-                    handleLogin={handleLogin}
-                    handleRegister={handleRegister}
+    return () => clearInterval(factInterval); // Cleanup interval on component unmount
+  }, [facts.length]);
+
+  return (
+    <div className={isRegistering ? "App registering" : "App"}>
+        {token && <LogoutButton handleLogout={handleLogout} />}
+
+        <h1>ZipLatinate</h1>
+
+        {!token ? (
+            <Auth
+                isRegistering={isRegistering}
+                setIsRegistering={setIsRegistering}
+                username={username}
+                setUsername={setUsername}
+                password={password}
+                setPassword={setPassword}
+                handleLogin={handleLogin}
+                handleRegister={handleRegister}
+            />
+        ) : (
+            <div className="form-container">
+                <SearchForm 
+                    name={name}
+                    setName={setName}
+                    zipcode={zipcode}
+                    setZipcode={setZipcode}
+                    handleSubmit={handleSubmit}
                 />
-            ) : (
-                <div>
-                    <SearchForm 
-                        name={name}
-                        setName={setName}
-                        zipcode={zipcode}
-                        setZipcode={setZipcode}
-                        handleSubmit={handleSubmit}
-                    />
-                    <button onClick={handleSaveSearch}  style={{ position: "absolute", top: "300px", right: "400px" }}>Save Search</button>
+                <div className="button-container">
+                    <button className="submit-button" onClick={handleSubmit}>Submit</button>
+                    <button className="save-search" onClick={handleSaveSearch}>Save Search</button>
                 </div>
-            )}
+            </div>
+        )}
 
-            {/* Output with county, population and map */}
-            {pigLatinName && county && population && (
-                <p>{`${pigLatinName}'s zip code is in ${county} County and has a population of ${population}.`}</p>
-            )}
+        {pigLatinName && county && population && (
+            <div className="result">
+                <p>
+                <span className="highlight">{pigLatinName}</span>
+                's zip code is in&nbsp;  
+                <span className="highlight">{county}</span> 
+                &nbsp;County and has a population of&nbsp; 
+                <span className="highlight">{population}</span>.
+                </p>
+                <div className="map-container">
+                    <Map position={mapData.position} county={mapData.county} />
+                </div>
+            </div>
+        )}
 
-            {/* Saved Searches */}
-            {savedSearches.length > 0 && (
+        {savedSearches.length > 0 && (
+            <div className="saved-search-container">
+                <h3>Saved Searches</h3>
                 <SavedSearches 
                     savedSearches={savedSearches}
                     handleDeleteSearch={handleDeleteSearch}
                 />
-            )}
-
-            {/* Main Layout with Flexbox */}
-            <div className="main-content">
-                {/* Fun Facts Section */}
-                <div className="fun-facts">
-                    <h3>Did you know?</h3>
-                    <p>Pig Latin is a fun way to alter English words. By moving the first consonant to the end and adding 'ay', you can create a playful version of your name!</p>
-                    <p>It was commonly used as a secret language among kids and originated as a playful transformation of English in the 19th century.</p>
-                </div>
-
-                {/* Conditionally Render Map Section */}
-                {mapData && (
-                    <div className="map-container">
-                        <Map position={mapData.position} county={mapData.county} />
-                    </div>
-                )}
             </div>
-        </div>
-    );
+        )}
+
+        {token && (
+            <div className="fun-facts">
+                <h3>Did you know?</h3>
+                <p>{facts[currentFactIndex]}</p>
+            </div>
+        )}
+    </div>
+);
 }
 
 export default App;

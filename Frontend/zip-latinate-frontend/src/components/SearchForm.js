@@ -17,7 +17,6 @@ const SearchForm = ({ name, setName, zipcode, setZipcode, handleSubmit }) => {
         placeholder="Enter your zip code"
         required
       />
-      <button type="submit">Submit</button>
     </form>
   );
 };
