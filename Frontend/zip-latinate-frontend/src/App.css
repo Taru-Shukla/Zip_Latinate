@@ -14,6 +14,11 @@ body, html {
   justify-content: center;
   min-height: 100vh;
   background-color: #f8d24a;
+  transition: background-color 1s ease-in-out; /* Smooth transition */
+}
+
+.App.registering {
+  background-color: #e75a7c; /* Background change when registering */
 }
 
 h1 {
@@ -41,52 +46,14 @@ h1::after {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start; /* Align map and content to top */
   width: 100%;
   max-width: 1200px;
   padding: 20px;
   margin-top: 40px;
 }
 
-.fun-facts, .map-container {
-  flex: 1;
-  padding: 20px;
-  margin: 10px;
-}
-
-/* Fun Facts Section */
-.fun-facts {
-  background-color: #fff; /* White background for contrast */
-  border-radius: 20px;
-  padding: 40px;
-  color: #333;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
-}
-
-.fun-facts h3 {
-  font-size: 2.5rem;
-  color: #e75a7c; /* Pink text for emphasis */
-}
-
-.fun-facts p {
-  line-height: 1.8;
-  margin-top: 10px;
-  color: #555;
-}
-
-/* Map Section */
-.map-container {
-  background-color: #fff; /* White background for contrast */
-  border-radius: 20px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
-  padding: 40px;
-  text-align: center;
-}
-
-.map-container h3 {
-  color: #e75a7c;
-}
-
+/* Forms */
 input {
   padding: 15px;
   font-size: 1.5rem;
@@ -120,6 +87,12 @@ button:hover {
   color: #f8d24a; /* Switch to yellow text */
 }
 
+button.save-search {
+  position: absolute;
+  top: 300px;
+  right: 200px;
+}
+
 /* Scroll Button */
 .scroll-down {
   position: absolute;
@@ -133,4 +106,129 @@ button:hover {
 
 .scroll-down:hover {
   color: #333;
+}
+
+/* Map Section */
+.map-container {
+  background-color: #fff;
+  border-radius: 10px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
+  padding: 20px; 
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 20px;
+}
+
+.map-container h3 {
+  color: #e75a7c; /* Keep the header color consistent */
+}
+
+/* Fun Facts Section */
+.fun-facts {
+  background-color: #fff; /* White background */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  max-width: 500px;
+}
+
+.fun-facts h3 {
+  color: #e75a7c;
+  margin-bottom: 15px;
+}
+
+/* Saved Searches Section */
+.saved-searches {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.saved-searches ul {
+  list-style: none;
+  padding: 0;
+}
+
+.saved-search-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #e75a7c;
+}
+
+.saved-search-item:last-child {
+  border-bottom: none;
+}
+
+.search-details {
+  flex-grow: 1;
+  margin-right: 20px; /* Space between the text and the delete button */
+}
+
+.delete-button {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  background-color: #ff6347; /* A distinct red color */
+  color: #fff;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #ff4500; /* Darker red on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .saved-search-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .delete-button {
+    margin-top: 10px; /* Add space above the delete button on smaller screens */
+  }
+}
+
+/* Logout Button */
+.logout-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px 20px;
+  background-color: #e75a7c;
+  color: #fff;
+  font-size: 1.2rem;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #333;
+  color: #f8d24a;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .map-container {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .save-search {
+    top: 250px;
+    right: 50px;
+  }
 }

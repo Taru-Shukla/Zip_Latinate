@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Map from "./components/Map.js";
+import Auth from "./components/Auth.js";
+import SavedSearches from "./components/SavedSearches.js";
+import SearchForm from "./components/SearchForm.js";
+import LogoutButton from "./LogoutButton.js";
 import './App.css';
 
 function App() {
@@ -12,6 +16,7 @@ function App() {
     const [token, setToken] = useState(null); // Track the token state
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [isRegistering, setIsRegistering] = useState(false); // To toggle between login and registration
     const [savedSearches, setSavedSearches] = useState([]); // To store saved searches
     const apiURL = process.env.REACT_APP_API_URL;
 
@@ -34,17 +39,41 @@ function App() {
             });
             const data = await response.json();
             if (response.ok) {
-                console.log('Login successful');
-                console.log('Token:', data.access_token);
-
-                // Save the token in the state
                 setToken(data.access_token);
             } else {
-                console.log('Login failed:', data.error);
                 alert(data.error); // Show error to user
             }
         } catch (error) {
             alert('Error during login');
+        }
+    };
+
+    // Handle user registration
+    const handleRegister = async (e) => {
+        e.preventDefault();
+
+        const registerData = {
+            username: username,
+            password: password
+        };
+
+        try {
+            const response = await fetch(`${apiURL}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(registerData),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert("User registered successfully! Please log in.");
+                setIsRegistering(false); // Switch to login after successful registration
+            } else {
+                alert(data.error);
+            }
+        } catch (error) {
+            alert('Error during registration');
         }
     };
 
@@ -63,7 +92,6 @@ function App() {
     // Handle name and zipcode submission (not saving search here)
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             // Convert Name to Pig Latin
             const nameResponse = await fetch(`${apiURL}/convert_name`, {
@@ -77,8 +105,6 @@ function App() {
             if (nameResponse.ok) {
                 const nameData = await nameResponse.json();
                 setPigLatinName(nameData.pig_latin_name || "Conversion failed");
-            } else {
-                alert('Failed to convert name');
             }
 
             // Fetch Zipcode Info
@@ -96,43 +122,32 @@ function App() {
                 setMapData({ position, county: zipData.county });
                 setCounty(zipData.county);
                 setPopulation(zipData.population);
-            } else {
-                alert('Failed to fetch zipcode info');
             }
         } catch (error) {
             alert('An error occurred while processing the request.');
         }
     };
-
-    // Handle saving the search
-    const handleSaveSearch = async () => {
-        if (token && county && population) { // Ensure search data is ready before saving
-            try {
-                const saveSearchResponse = await fetch(`${apiURL}/save_search`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`, // Pass JWT token for authentication
-                    },
-                    body: JSON.stringify({ name, zip_code: zipcode, county, population }), // Include county and population
-                });
-
-                if (saveSearchResponse.ok) {
-                    alert("Search saved successfully!");
-
-                    // Fetch saved searches to update the UI
-                    fetchSavedSearches();
-                } else {
-                    alert("Failed to save search.");
-                }
-            } catch (error) {
-                alert('Error saving search');
+   // Handle deleting a search
+   const handleDeleteSearch = async (id) => {
+    if (token) {
+        try {
+            const response = await fetch(`${apiURL}/delete_search/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                alert("Search deleted successfully.");
+                fetchSavedSearches(); // Refresh the saved searches after deletion
+            } else {
+                alert("Failed to delete search.");
             }
-        } else {
-            alert("Please fetch name and zip code data first before saving the search.");
+        } catch (error) {
+            alert('Error deleting search');
         }
+    }
     };
-
     // Fetch saved searches from the server
     const fetchSavedSearches = async () => {
         if (token) {
@@ -153,25 +168,32 @@ function App() {
         }
     };
 
-    // Handle deleting a search
-    const handleDeleteSearch = async (id) => {
-        if (token) {
+    // Handle saving the search
+    const handleSaveSearch = async () => {
+        if (token && county && population) { // Ensure search data is ready before saving
             try {
-                const response = await fetch(`${apiURL}/delete_search/${id}`, {
-                    method: 'DELETE',
+                const saveSearchResponse = await fetch(`${apiURL}/save_search`, {
+                    method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`, // Pass JWT token for authentication
                     },
+                    body: JSON.stringify({ name, zip_code: zipcode, county, population }), // Include county and population
                 });
-                if (response.ok) {
-                    alert("Search deleted successfully.");
-                    fetchSavedSearches(); // Refresh the saved searches after deletion
+
+                if (saveSearchResponse.ok) {
+                    alert("Search saved successfully!");
+                    fetchSavedSearches(); // Refresh saved searches after saving
+                    setName("");
+                    setZipcode("");
                 } else {
-                    alert("Failed to delete search.");
+                    alert("Failed to save search.");
                 }
             } catch (error) {
-                alert('Error deleting search');
+                alert('Error saving search');
             }
+        } else {
+            alert("Please fetch name and zip code data first before saving the search.");
         }
     };
 
@@ -180,54 +202,39 @@ function App() {
             fetchSavedSearches(); // Fetch saved searches when logged in
         }
     }, [token]);
+    // Conditional styling for background color transition
+    const appClass = isRegistering ? "App registering" : "App";
+ 
 
     return (
-        <div className="App">
+        <div className={appClass}>
+            {/* Logout button on top-right corner */}
+            {token && <LogoutButton handleLogout={handleLogout} />}
+
             <h1>ZipLatinate</h1>
 
-            {/* Conditionally render login form or search form */}
+            {/* Conditionally render login or register form */}
             {!token ? (
-                // Login Form
-                <form onSubmit={handleLogin}>
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Username"
-                        required
-                    />
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                        required
-                    />
-                    <button type="submit">Login</button>
-                </form>
+                <Auth
+                    isRegistering={isRegistering}
+                    setIsRegistering={setIsRegistering}
+                    username={username}
+                    setUsername={setUsername}
+                    password={password}
+                    setPassword={setPassword}
+                    handleLogin={handleLogin}
+                    handleRegister={handleRegister}
+                />
             ) : (
                 <div>
-                    {/* Show Search form when the user is logged in */}
-                    <form onSubmit={handleSubmit}>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Enter your full name"
-                            required
-                        />
-                        <input
-                            type="text"
-                            value={zipcode}
-                            onChange={(e) => setZipcode(e.target.value)}
-                            placeholder="Enter your zip code"
-                            required
-                        />
-                        <button type="submit">Submit</button>
-                    </form>
-
-                    <button onClick={handleSaveSearch}>Save Search</button>
-                    <button onClick={handleLogout}>Logout</button>
+                    <SearchForm 
+                        name={name}
+                        setName={setName}
+                        zipcode={zipcode}
+                        setZipcode={setZipcode}
+                        handleSubmit={handleSubmit}
+                    />
+                    <button onClick={handleSaveSearch}  style={{ position: "absolute", top: "300px", right: "400px" }}>Save Search</button>
                 </div>
             )}
 
@@ -238,17 +245,10 @@ function App() {
 
             {/* Saved Searches */}
             {savedSearches.length > 0 && (
-                <div>
-                    <h3>Saved Searches</h3>
-                    <ul>
-                        {savedSearches.map((search, index) => (
-                            <li key={index}>
-                                {search.name} ({search.zip_code}) - {search.county}, Population: {search.population}
-                                <button onClick={() => handleDeleteSearch(search.id)}>Delete</button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <SavedSearches 
+                    savedSearches={savedSearches}
+                    handleDeleteSearch={handleDeleteSearch}
+                />
             )}
 
             {/* Main Layout with Flexbox */}
