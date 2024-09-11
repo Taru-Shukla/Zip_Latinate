@@ -8,7 +8,7 @@ import pandas as pd
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['JWT_SECRET_KEY'] = 'super-secret-key'  # Change this in production
+app.config['JWT_SECRET_KEY'] = 'xYsSLpjz0BtIvMRE'  # Change this in production
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
